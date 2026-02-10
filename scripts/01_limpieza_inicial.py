@@ -108,6 +108,8 @@ def limpiar_datos():
     os.makedirs('data/processed', exist_ok=True)
     ruta_salida = 'data/processed/datos_depurados.parquet'
     df_neto.to_parquet(ruta_salida, index=False)
+    # UNIFICACIÓN: Guardar también en CSV
+    df_neto.to_csv(ruta_salida.replace('.parquet', '.csv'), index=False)
     
     print(f"✅ Datos depurados guardados en: {ruta_salida}")
     print(df_neto.head())

@@ -1,0 +1,22 @@
+1. Total registros detallados (transacciones): 76941
+
+2. Distribución por Tipo de Entidad:
+tipo_entidad
+Municipal        56297
+Otro/Nacional    18043
+Departamental     2601
+Name: count, dtype: int64
+
+3. Distribución por Vigencia (Años):
+vigencia
+2020    13203
+2021    13087
+2022    13056
+2023    13325
+2024    13134
+2025    11136
+Name: count, dtype: int64
+
+4. Registros si filtramos solo MUNICIPAL: 56297
+5. Meses resultantes (Agregado Municipal): 70
+6. Meses resultantes (Agregado TOTAL sin filtrar): 70

@@ -76,12 +76,18 @@ def feature_engineering():
     os.makedirs('data/features', exist_ok=True)
     train.to_parquet('data/features/train_mensual.parquet', index=False)
     test.to_parquet('data/features/test_mensual.parquet', index=False)
+
+    # UNIFICACIÓN: Guardar también en CSV
+    train.to_csv('data/features/train_mensual.csv', index=False)
+    test.to_csv('data/features/test_mensual.csv', index=False)
     
     # Guardar dataset completo con features para análisis posterior
     df_model.to_parquet('data/features/dataset_completo.parquet', index=False)
+    df_model.to_csv('data/features/dataset_completo.csv', index=False)
     
     # NUEVO: Guardar histórico completo (sin dropna) para visualizaciones
     df_agg.to_parquet('data/features/dataset_historico_completo.parquet', index=False)
+    df_agg.to_csv('data/features/dataset_historico_completo.csv', index=False)
     
     print("✅ Features generados y guardados.")
 
