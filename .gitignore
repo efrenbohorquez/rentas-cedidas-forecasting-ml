@@ -1,0 +1,23 @@
+# Datos
+data/
+results/
+BaseRentasCedidas.xlsx
+*.xls
+*.xlsx
+*.csv
+*.parquet
+*.pkl
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.ipynb_checkpoints/
+.env
+.venv
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
