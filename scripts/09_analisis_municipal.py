@@ -45,6 +45,62 @@ def analyze_descriptive(df):
     os.makedirs('results/municipal', exist_ok=True)
     total_por_entidad.to_csv('results/municipal/estadisticas_descriptivas.csv', index=False)
     
+    # --- GRÁFICOS DESCRIPTIVOS ---
+    
+    # 1. Bar Plot: Top 10 Municipios
+    plt.figure(figsize=(12, 6))
+    top_10 = total_por_entidad.head(10)
+    sns.barplot(data=top_10, x='recaudo', y='entidad', palette='viridis')
+    plt.title('Top 10 Municipios por Recaudo Total (2020-2025)')
+    plt.xlabel('Recaudo Total')
+    plt.ylabel('Municipio')
+    plt.tight_layout()
+    plt.savefig('results/municipal/top_10_municipios.png')
+    plt.close()
+
+    # 2. Pareto Plot (Top 20 para visualización de curva)
+    top_20 = total_por_entidad.head(20)
+    fig, ax1 = plt.subplots(figsize=(14, 7))
+    
+    # Bar plot (Left axis)
+    sns.barplot(data=top_20, x='entidad', y='recaudo', color='tab:blue', ax=ax1, alpha=0.6)
+    ax1.set_ylabel('Recaudo Total', color='tab:blue', fontsize=12)
+    ax1.tick_params(axis='y', labelcolor='tab:blue')
+    ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45, ha='right', fontsize=9)
+    ax1.set_xlabel('Municipio', fontsize=12)
+    
+    # Line plot (Right axis - Cumulative %)
+    ax2 = ax1.twinx()
+    sns.lineplot(data=top_20, x='entidad', y='acumulado', color='tab:red', marker='o', ax=ax2, linewidth=2)
+    ax2.set_ylabel('% Acumulado (Pareto)', color='tab:red', fontsize=12)
+    ax2.tick_params(axis='y', labelcolor='tab:red')
+    ax2.set_ylim(0, 1.1)
+    
+    # Línea de referencia 80%
+    ax2.axhline(0.8, color='grey', linestyle='--', linewidth=1)
+    ax2.text(0, 0.81, '80% Recaudo', color='grey')
+    
+    plt.title('Diagrama de Pareto: Top 20 Municipios', fontsize=16)
+    plt.tight_layout()
+    plt.savefig('results/municipal/pareto_top_20.png')
+    plt.close()
+
+    # 3. Time Series Comparison (Top 5)
+    top_5_names = total_por_entidad['entidad'].head(5).tolist()
+    df_top5 = df_mun[df_mun['entidad'].isin(top_5_names)]
+    
+    plt.figure(figsize=(14, 7))
+    sns.lineplot(data=df_top5, x='fecha', y='recaudo', hue='entidad', style='entidad', markers=True, dashes=False)
+    plt.title('Evolución Temporal del Recaudo: Top 5 Municipios', fontsize=16)
+    plt.xlabel('Fecha', fontsize=12)
+    plt.ylabel('Recaudo', fontsize=12)
+    plt.legend(title='Municipio', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    plt.savefig('results/municipal/serie_tiempo_comparativa_top5.png')
+    plt.close()
+
+    print("   Gráficos descriptivos generados: top_10, pareto, series_top5")
+    
     return total_por_entidad, df_mun
 
 def analyze_inferential(df_mun, top_n=5):
