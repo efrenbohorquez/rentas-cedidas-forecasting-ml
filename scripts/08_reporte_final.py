@@ -1,16 +1,15 @@
 import pandas as pd
 import numpy as np
 import os
+import config
+import utils
 
 def load_data():
     """Carga los datos depurados."""
     # Usamos el dataset histórico completo generado en feature engineering
-    try:
-        df = pd.read_parquet('data/features/dataset_historico_completo.parquet')
-        return df
-    except FileNotFoundError:
-        print("Error: No se encontró 'data/features/dataset_historico_completo.parquet'")
-        return None
+    # config.DATA_FEATURES / 'dataset_historico_completo.parquet'
+    path = config.DATA_FEATURES / 'dataset_historico_completo.parquet'
+    return utils.load_data(path)
 
 def analyze_data_quality(df):
     """Genera estadísticas descriptivas de calidad de datos."""
@@ -28,20 +27,21 @@ def analyze_data_quality(df):
 
 def aggregate_and_export(df, output_dir):
     """Agrega datos y exporta a CSV para modelado."""
+    df = df.copy()
     df['fecha'] = pd.to_datetime(df['fecha'])
     df = df.set_index('fecha')
     
     # Mensual
     df_m = df.resample('M').sum()
-    df_m.to_csv(f'{output_dir}/dataset_modelos_mensual.csv')
+    df_m.to_csv(output_dir / 'dataset_modelos_mensual.csv')
     
     # Bimestral
     df_b = df.resample('2M').sum()
-    df_b.to_csv(f'{output_dir}/dataset_modelos_bimestral.csv')
+    df_b.to_csv(output_dir / 'dataset_modelos_bimestral.csv')
     
     # Trimestral
     df_q = df.resample('Q').sum()
-    df_q.to_csv(f'{output_dir}/dataset_modelos_trimestral.csv')
+    df_q.to_csv(output_dir / 'dataset_modelos_trimestral.csv')
     
     return {'Mensual': len(df_m), 'Bimestral': len(df_b), 'Trimestral': len(df_q)}
 
@@ -50,11 +50,13 @@ def generate_report(stats, export_counts, diagnostic_path, output_path):
     
     # Cargar diagnóstico si existe
     diagnostic_table = "| Modelo | Horizonte | RMSE | MAPE |\n|---|---|---|---|\n| No disponible | - | - | - |"
+    
     if os.path.exists(diagnostic_path):
         try:
             df_diag = pd.read_csv(diagnostic_path)
             # Formatear tabla markdown
-            diagnostic_table = df_diag[['Horizonte', 'Model', 'MAPE', 'RMSE', 'AIC']].to_markdown(index=False, floatfmt=".4f")
+            if not df_diag.empty:
+                diagnostic_table = df_diag[['Horizonte', 'Model', 'MAPE', 'RMSE', 'AIC']].to_markdown(index=False, floatfmt=".4f")
         except Exception as e:
             diagnostic_table = f"Error cargando tabla diagnóstico: {e}"
 
@@ -95,13 +97,16 @@ Para la predicción de Rentas Cedidas en Cundinamarca, se recomienda utilizar el
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(report_content)
     
-    print(f"Reporte generado en: {output_path}")
+    print(f"✅ Reporte generado en: {output_path}")
 
 def main():
-    output_dir_tables = 'results/tables'
-    output_dir_reports = 'results/reports'
-    os.makedirs(output_dir_tables, exist_ok=True)
-    os.makedirs(output_dir_reports, exist_ok=True)
+    print("🚀 Generando Reporte Final (Refactorizado)...")
+    
+    output_dir_tables = config.RESULTS_DIR / 'tables'
+    output_dir_reports = config.RESULTS_DIR / 'reports'
+    
+    output_dir_tables.mkdir(parents=True, exist_ok=True)
+    output_dir_reports.mkdir(parents=True, exist_ok=True)
     
     # 1. Cargar Datos
     df = load_data()
@@ -114,9 +119,13 @@ def main():
     export_counts = aggregate_and_export(df, output_dir_tables)
     
     # 4. Generar Reporte
-    diagnostic_path = 'results/figures/diagnostico_arima_sarima/reporte_comparativo.csv'
-    report_path = f'{output_dir_reports}/informe_tecnico_datos_modelos.md'
+    # Asumimos que el path de diagnóstico sigue siendo relativo o deberia estar en config?
+    # Por ahora config.RESULTS_DIR / ...
+    diagnostic_path = config.RESULTS_DIR / 'figures/diagnostico_arima_sarima/reporte_comparativo.csv'
+    report_path = output_dir_reports / 'informe_tecnico_datos_modelos.md'
+    
     generate_report(stats, export_counts, diagnostic_path, report_path)
+    print("✅ Generación de reportes finalizada.")
 
 if __name__ == "__main__":
     main()

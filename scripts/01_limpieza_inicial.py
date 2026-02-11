@@ -1,21 +1,19 @@
 import pandas as pd
 import numpy as np
-import os
+import config
+import utils
 
 def limpiar_datos():
-    print("🚀 Iniciando limpieza de datos (Versión Municipal + Neteo)...")
+    print("🚀 Iniciando limpieza de datos (Refactorizado)...")
     
     # 1. Cargar datos
-    ruta_excel = 'BaseRentasCedidas (1).xlsx'
-    if not os.path.exists(ruta_excel):
-        print(f"❌ Archivo no encontrado: {ruta_excel}")
-        return
-        
-    print(f"📂 Leyendo archivo: {ruta_excel}...")
-    try:
-        df = pd.read_excel(ruta_excel)
-    except Exception as e:
-        print(f"❌ Error leyendo Excel: {e}")
+    ruta_excel = config.BASE_DIR / config.RAW_EXCEL_FILE
+    
+    print(f"📂 Buscando archivo en: {ruta_excel}...")
+    df = utils.load_data(ruta_excel, file_type='excel')
+    
+    if df is None:
+        print("❌ No se pudo cargar el archivo Excel.")
         return
 
     # 2. Limpieza de columnas
@@ -44,15 +42,9 @@ def limpiar_datos():
     df['recaudo'] = pd.to_numeric(df['recaudo'], errors='coerce').fillna(0)
     
     # 4. Estandarización de Fechas (Vigencia-Mes)
-    # Mapeo robusto (Case Insensitive, Strip)
-    mapa_meses = {
-        'ENERO': 1, 'FEBRERO': 2, 'MARZO': 3, 'ABRIL': 4, 'MAYO': 5, 'JUNIO': 6,
-        'JULIO': 7, 'AGOSTO': 8, 'SEPTIEMBRE': 9, 'OCTUBRE': 10, 'NOVIEMBRE': 11, 'DICIEMBRE': 12
-    }
-    
-    # Normalizar mes_nombre
+    print("📅 Estandarizando fechas...")
     df['mes_nombre_norm'] = df['mes_nombre'].astype(str).str.upper().str.strip()
-    df['mes_num'] = df['mes_nombre_norm'].map(mapa_meses)
+    df['mes_num'] = df['mes_nombre_norm'].map(config.MESES_MAP)
     
     # Reportar meses no mapeados
     unmapped = df[df['mes_num'].isna()]['mes_nombre_norm'].unique()
@@ -80,22 +72,17 @@ def limpiar_datos():
     print(f"   Distribución por tipo:\n{df['tipo_entidad'].value_counts()}")
 
     # 6. Neteo Mensual (Manejo de Negativos)
-    # En lugar de eliminar negativos, agrupamos por Fecha + Entidad + Fuente
-    # Esto suma positivos y negativos del mismo periodo.
     print("➕➖ Realizando neteo mensual de transacciones...")
     
     grupos = ['fecha', 'vigencia', 'mes_num', 'entidad', 'tipo_entidad', 'fuente']
     df_neto = df.groupby(grupos)['recaudo'].sum().reset_index()
     
-    # Verificar si quedaron netos negativos (reales devoluciones netas)
+    # Verificar si quedaron netos negativos
     n_negativos = (df_neto['recaudo'] < 0).sum()
     if n_negativos > 0:
-        print(f"⚠️ Se encontraron {n_negativos} registros con recaudo neto negativo. Se ajustarán a 0 o mantendrán según lógica de negocio.")
-        # Opcional: Ajustar a 0 o dejarlos. Para series de tiempo, 0 es mejor que negativo si es ingreso.
-        # Asumiremos 0 para evitar problemas con logaritmos o modelos que asumen > 0.
+        print(f"⚠️ Se encontraron {n_negativos} registros con recaudo neto negativo. Ajustando a 0.")
         df_neto.loc[df_neto['recaudo'] < 0, 'recaudo'] = 0
         
-    # Validar integridad
     print(f"   Registros originales: {len(df)}")
     print(f"   Registros neteados: {len(df_neto)}")
     
@@ -105,15 +92,9 @@ def limpiar_datos():
     df_neto['tipo_entidad'] = df_neto['tipo_entidad'].astype(str)
     
     # 7. Guardar
-    os.makedirs('data/processed', exist_ok=True)
-    ruta_salida = 'data/processed/datos_depurados.parquet'
-    df_neto.to_parquet(ruta_salida, index=False)
-    # UNIFICACIÓN: Guardar también en CSV
-    df_neto.to_csv(ruta_salida.replace('.parquet', '.csv'), index=False)
+    utils.save_data(df_neto, config.CLEANED_DATA_PARQUET)
     
-    print(f"✅ Datos depurados guardados en: {ruta_salida}")
-    print(df_neto.head())
-    print(df_neto.info())
+    print(f"✅ Limpieza completada.")
 
 if __name__ == '__main__':
     limpiar_datos()
