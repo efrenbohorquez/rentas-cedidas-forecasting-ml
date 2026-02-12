@@ -39,6 +39,12 @@ Se entrenaron y compararon cuatro familias de algoritmos (`03_modelos.py`) para 
 4.  **LSTM (Deep Learning):** Red neuronal recurrente (Long Short-Term Memory) para capturar dependencias de largo plazo secuenciales.
     *   *Nota Técnica:* Se aplicó una restricción de no-negatividad (`ReLu`) a las salidas de todos los modelos para garantizar coherencia fiscal.
 
+### Fase 4.1: Optimización y Modelo Híbrido (Ensemble)
+Para superar las limitaciones de los modelos individuales, se desarrolló una estrategia de **Stacking** (`11_modelos_ensemble.py`):
+1.  **Optimización de Hiperparámetros:** Se utilizó *Grid Search* para afinar los parámetros de SARIMAX (p,d,q) y XGBoost (n_estimators, max_depth).
+2.  **Meta-Modelo:** Se entrenó un modelo de **Ridge Regression** (Nivel 1) que toma como entrada las predicciones de los modelos base (Nivel 0) y aprende a combinarlas óptimamente para minimizar el error global.
+3.  **Resultado:** Un modelo híbrido que pondera dinámicamente la estacionalidad (SARIMAX) y la complejidad no lineal (XGBoost).
+
 ### Fase 5: Evaluación (Evaluation)
 La validación (`04_validacion_final.py`) se realizó mediante una estrategia de ventana deslizante (*Walk-Forward Validation*) simulando un escenario real de predicción:
 *   **Conjunto de Entrenamiento:** Datos de 2020 a 2024.

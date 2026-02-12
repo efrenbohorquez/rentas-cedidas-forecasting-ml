@@ -1,5 +1,5 @@
 # Informe Técnico: Calidad de Datos y Selección de Modelos
-**Fecha de Generación:** 2026-02-10
+**Fecha de Generación:** 2026-02-11
 
 ## 1. Resumen de Limpieza de Datos
 El dataset ha sido procesado siguiendo el protocolo estricto de limpieza:

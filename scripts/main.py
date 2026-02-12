@@ -11,6 +11,7 @@ SCRIPTS = [
     "09_analisis_municipal.py",
     "10_analisis_avanzado.py",
     "11_modelos_ensemble.py",
+    "12_validacion_cierre_2025.py",
     "08_reporte_final.py"
 ]
 

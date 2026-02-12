@@ -22,9 +22,15 @@ TEST_DATA_PARQUET = DATA_FEATURES / "test_mensual.parquet"
 FULL_DATA_PARQUET = DATA_FEATURES / "dataset_completo.parquet"
 
 # --- DATES ---
+# --- DATES (Global Split) ---
 TRAIN_START_YEAR = 2020
+TRAIN_CUTOFF_DATE = '2025-07-31' # Train ends here
+TEST_START_DATE = '2025-08-01'   # Test starts here
+TEST_END_DATE = '2025-10-31'     # Test ends here (or max available)
+
+# Deprecated but kept for compatibility (will be ignored by new logic)
 TRAIN_END_YEAR = 2025
-TEST_YEAR = 2026
+TEST_YEAR = 2025 # Changed to reflect that test is now late 2025
 
 # --- VISUALIZATION ---
 PLOT_STYLE = 'seaborn-v0_8-whitegrid'

@@ -50,15 +50,18 @@ def feature_engineering():
     print(f"📉 Datos finales para modelo: {df_model.shape}")
     
     # 5. Split
-    print(f"✂️ Dividiendo Train (mask <= {config.TRAIN_END_YEAR}) vs Test ({config.TEST_YEAR})...")
-    train = df_model[df_model['año'] <= config.TRAIN_END_YEAR]
-    test = df_model[df_model['año'] == config.TEST_YEAR]
+    # 5. Split (Global Configuration: Train <= 2025-07-31, Test >= 2025-08-01)
+    split_date_train = pd.Timestamp(config.TRAIN_CUTOFF_DATE)
+    print(f"✂️ Dividiendo Train (<= {config.TRAIN_CUTOFF_DATE}) vs Test (>= {config.TEST_START_DATE})...")
+    
+    train = df_model[df_model['fecha'] <= split_date_train]
+    test = df_model[df_model['fecha'] > split_date_train]
     
     print(f"🚂 Train: {train.shape[0]} meses")
     print(f"🧪 Test:  {test.shape[0]} meses")
     
     if test.empty:
-        print("⚠️ ADVERTENCIA: No hay datos para test.")
+        print("⚠️ ADVERTENCIA: No hay datos para test con la fecha de corte actual.")
     
     # 6. Guardar
     utils.save_data(train, config.TRAIN_DATA_PARQUET)
