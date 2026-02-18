@@ -12,13 +12,29 @@ from itertools import product
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 import xgboost as xgb
 import warnings
-def load_data(path, file_type='parquet'):
+def load_data(path, file_type='excel'):
     """Loads data from a given path with error handling."""
     path = Path(path)
     if not path.exists():
-        raise FileNotFoundError(f"❌ File not found: {path}")
+        # Try to find with other extensions if exact match fails
+        if path.suffix == '.parquet' and path.with_suffix('.xlsx').exists():
+            path = path.with_suffix('.xlsx')
+            file_type = 'excel'
+        elif path.suffix == '.xlsx' and path.with_suffix('.parquet').exists():
+            path = path.with_suffix('.parquet')
+            file_type = 'parquet'
+        else:
+             raise FileNotFoundError(f"❌ File not found: {path}")
     
     try:
+        # Auto-detect based on extension if not explicit
+        if path.suffix == '.xlsx':
+            file_type = 'excel'
+        elif path.suffix == '.parquet':
+            file_type = 'parquet'
+        elif path.suffix == '.csv':
+            file_type = 'csv'
+
         if file_type == 'parquet':
             df = pd.read_parquet(path)
         elif file_type == 'csv':
@@ -34,13 +50,21 @@ def load_data(path, file_type='parquet'):
         return None
 
 def save_data(df, path, save_csv=True):
-    """Saves DataFrame to Parquet and optionally CSV."""
+    """Saves DataFrame to Excel/Parquet based on path suffix."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     
-    # Save Parquet
-    df.to_parquet(path, index=False)
-    print(f"💾 Saved Parquet: {path}")
+    if path.suffix == '.xlsx':
+        df.to_excel(path, index=False)
+        print(f"💾 Saved Excel: {path}")
+    elif path.suffix == '.parquet':
+         df.to_parquet(path, index=False)
+         print(f"💾 Saved Parquet: {path}")
+    else:
+        # Default fallback if no extension provided or unknown
+        excel_path = path.with_suffix('.xlsx')
+        df.to_excel(excel_path, index=False)
+        print(f"💾 Saved Excel: {excel_path}")
     
     # Save CSV
     if save_csv:

@@ -17,7 +17,14 @@ plt.rcParams['figure.figsize'] = (12, 6)
 
 def load_data():
     """Carga y prepara los datos históricos."""
-    df = pd.read_parquet('data/features/dataset_historico_completo.parquet')
+    # Usar config y utils para cargar el archivo Excel correctamente
+    import config
+    import utils
+    
+    df = utils.load_data(config.FULL_DATA_FILE)
+    if df is None:
+        raise FileNotFoundError(f"No se pudo cargar {config.FULL_DATA_FILE}")
+
     df['fecha'] = pd.to_datetime(df['fecha'])
     df = df.set_index('fecha')
     
@@ -57,13 +64,20 @@ def plot_diagnostics(residuals, title, save_path):
     sns.histplot(residuals, kde=True, ax=axes[0, 1])
     axes[0, 1].set_title('Distribución de Residuos')
 
+    # 📌 TÉCNICA DE MEJORA (NotebookLM - Video: Diagnóstico de Modelos ARIMA):
+    # El análisis de residuos es crítico.
+    # - ACF (Autocorrelation Function): Si hay picos significativos fuera del intervalo de confianza en los residuos,
+    #   el modelo no ha capturado toda la información temporal (falta de ajuste 'q' MA).
+    # - PACF (Partial Autocorrelation): Ayuda a identificar la necesidad de términos autoregresivos 'p' (AR).
+    # - Histograma: Los residuos deben seguir una distribución normal (Campana de Gauss) con media 0.
+    
     # 3. ACF
     plot_acf(residuals, ax=axes[1, 0], lags=min(len(residuals)//2 - 1, 20))
-    axes[1, 0].set_title('Autocorrelación (ACF)')
+    axes[1, 0].set_title('Autocorrelación (ACF) - Evalúa MA(q)')
 
     # 4. PACF
     plot_pacf(residuals, ax=axes[1, 1], lags=min(len(residuals)//2 - 1, 20))
-    axes[1, 1].set_title('Autocorrelación Parcial (PACF)')
+    axes[1, 1].set_title('Autocorrelación Parcial (PACF) - Evalúa AR(p)')
 
     plt.tight_layout()
     plt.savefig(save_path)

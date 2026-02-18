@@ -13,24 +13,32 @@ for d in [DATA_PROCESSED, DATA_FEATURES, RESULTS_DIR, MODELS_DIR]:
     d.mkdir(parents=True, exist_ok=True)
 
 # --- FILES ---
+# --- FILES ---
 RAW_EXCEL_FILE = "BaseRentasCedidas (1).xlsx" # Path relative to root or absolute if needed
-CLEANED_DATA_PARQUET = DATA_PROCESSED / "datos_depurados.parquet"
+CLEANED_DATA_FILE = DATA_PROCESSED / "datos_depurados.xlsx" # Changed to .xlsx
+CLEANED_DATA_PARQUET = CLEANED_DATA_FILE # Alias for compatibility
 CLEANED_DATA_CSV = DATA_PROCESSED / "datos_depurados.csv"
 
-TRAIN_DATA_PARQUET = DATA_FEATURES / "train_mensual.parquet"
-TEST_DATA_PARQUET = DATA_FEATURES / "test_mensual.parquet"
-FULL_DATA_PARQUET = DATA_FEATURES / "dataset_completo.parquet"
+TRAIN_DATA_FILE = DATA_FEATURES / "train_mensual.xlsx"
+TEST_DATA_FILE = DATA_FEATURES / "test_mensual.xlsx"
+FULL_DATA_FILE = DATA_FEATURES / "dataset_completo.xlsx"
+FULL_HISTORIC_DATA_FILE = DATA_FEATURES / 'dataset_historico_completo.xlsx'
+
+# Aliases for compatibility with existing scripts
+TRAIN_DATA_PARQUET = TRAIN_DATA_FILE
+TEST_DATA_PARQUET = TEST_DATA_FILE
+FULL_DATA_PARQUET = FULL_DATA_FILE
 
 # --- DATES ---
 # --- DATES (Global Split) ---
 TRAIN_START_YEAR = 2020
-TRAIN_CUTOFF_DATE = '2025-07-31' # Train ends here
-TEST_START_DATE = '2025-08-01'   # Test starts here
-TEST_END_DATE = '2025-10-31'     # Test ends here (or max available)
+TRAIN_CUTOFF_DATE = '2025-09-30' # Train ends here (End of Sept)
+TEST_START_DATE = '2025-10-01'   # Test starts here (Start of Oct)
+TEST_END_DATE = '2025-12-31'     # Test ends here (End of Dec)
 
-# Deprecated but kept for compatibility (will be ignored by new logic)
+# Deprecated but kept for compatibility
 TRAIN_END_YEAR = 2025
-TEST_YEAR = 2025 # Changed to reflect that test is now late 2025
+TEST_YEAR = 2025
 
 # --- VISUALIZATION ---
 PLOT_STYLE = 'seaborn-v0_8-whitegrid'

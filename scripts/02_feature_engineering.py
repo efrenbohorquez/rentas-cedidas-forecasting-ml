@@ -10,9 +10,12 @@ def feature_engineering():
     print("🚀 Iniciando Feature Engineering (Refactorizado)...")
     
     # 1. Cargar datos
-    df = utils.load_data(config.CLEANED_DATA_PARQUET)
+    df = utils.load_data(config.CLEANED_DATA_FILE)
     if df is None: return
     
+    # Asegurar que fecha es datetime (al cargar de Excel puede venir como string o object si hubo conversión previa)
+    df['fecha'] = pd.to_datetime(df['fecha'])
+
     # 2. Filtro Municipal
     if 'tipo_entidad' in df.columns:
         print("🔍 Filtrando solo entidades MUNICIPALES...")
@@ -44,6 +47,23 @@ def feature_engineering():
     # Exógenas
     df_agg['es_periodo_renta'] = df_agg['mes'].isin([4, 5, 8, 9, 10]).astype(int)
     df_agg['es_pico_fin_año'] = df_agg['mes'].isin([12, 1]).astype(int)
+
+    # 📌 TÉCNICA DE MEJORA (NotebookLM - Video 7: Ingeniería de Variables Temporales):
+    # Codificación Cíclica (Cyclical Encoding):
+    # Transformamos variables como 'mes' y 'trimestre' usando Seno y Coseno.
+    # Esto permite que el modelo entienda que el mes 12 (Diciembre) está "cerca" del mes 1 (Enero),
+    # capturando correctamente la estacionalidad anual.
+    df_agg['sin_mes'] = np.sin(2 * np.pi * df_agg['mes'] / 12)
+    df_agg['cos_mes'] = np.cos(2 * np.pi * df_agg['mes'] / 12)
+    df_agg['sin_trimestre'] = np.sin(2 * np.pi * df_agg['trimestre'] / 4)
+    df_agg['cos_trimestre'] = np.cos(2 * np.pi * df_agg['trimestre'] / 4)
+
+    # 📌 TÉCNICA DE MEJORA (NotebookLM - Video: Estacionariedad en Series Temporales):
+    # Diferenciación (Differencing):
+    # Calculamos la diferencia entre t y t-1 para eliminar tendencias y estabilizar la media,
+    # ayudando a modelos que asumen o se benefician de datos estacionarios.
+    df_agg['recaudo_diff'] = df_agg['recaudo'].diff().fillna(0)
+
     
     # Dataset para modelos (sin nulos)
     df_model = df_agg.dropna()
@@ -64,12 +84,12 @@ def feature_engineering():
         print("⚠️ ADVERTENCIA: No hay datos para test con la fecha de corte actual.")
     
     # 6. Guardar
-    utils.save_data(train, config.TRAIN_DATA_PARQUET)
-    utils.save_data(test, config.TEST_DATA_PARQUET)
-    utils.save_data(df_model, config.FULL_DATA_PARQUET)
+    utils.save_data(train, config.TRAIN_DATA_FILE)
+    utils.save_data(test, config.TEST_DATA_FILE)
+    utils.save_data(df_model, config.FULL_DATA_FILE)
     
     # Guardar histórico completo para visualizaciones
-    utils.save_data(df_agg, config.DATA_FEATURES / 'dataset_historico_completo.parquet')
+    utils.save_data(df_agg, config.DATA_FEATURES / 'dataset_historico_completo.xlsx')
     
     print("✅ Features generados y guardados (Refactorizado).")
 
