@@ -24,10 +24,30 @@ TEST_DATA_FILE = DATA_FEATURES / "test_mensual.xlsx"
 FULL_DATA_FILE = DATA_FEATURES / "dataset_completo.xlsx"
 FULL_HISTORIC_DATA_FILE = DATA_FEATURES / 'dataset_historico_completo.xlsx'
 
+# Monthly Data (Aliases for clarity)
+TRAIN_DATA_MENSUAL = TRAIN_DATA_FILE
+TEST_DATA_MENSUAL = TEST_DATA_FILE
+FULL_DATA_MENSUAL = FULL_DATA_FILE
+
 # Aliases for compatibility with existing scripts
 TRAIN_DATA_PARQUET = TRAIN_DATA_FILE
 TEST_DATA_PARQUET = TEST_DATA_FILE
 FULL_DATA_PARQUET = FULL_DATA_FILE
+
+# Quarterly Data
+TRAIN_DATA_TRIMESTRAL = DATA_FEATURES / "train_trimestral.xlsx"
+TEST_DATA_TRIMESTRAL = DATA_FEATURES / "test_trimestral.xlsx"
+FULL_DATA_TRIMESTRAL = DATA_FEATURES / "dataset_trimestral.xlsx"
+
+# Bimonthly Data (Bimensual)
+TRAIN_DATA_BIMESTRAL = DATA_FEATURES / "train_bimestral.xlsx"
+TEST_DATA_BIMESTRAL = DATA_FEATURES / "test_bimestral.xlsx"
+FULL_DATA_BIMESTRAL = DATA_FEATURES / "dataset_bimestral.xlsx"
+
+# Semestral Data
+TRAIN_DATA_SEMESTRAL = DATA_FEATURES / "train_semestral.xlsx"
+TEST_DATA_SEMESTRAL = DATA_FEATURES / "test_semestral.xlsx"
+FULL_DATA_SEMESTRAL = DATA_FEATURES / "dataset_semestral.xlsx"
 
 # --- DATES ---
 # --- DATES (Global Split) ---
