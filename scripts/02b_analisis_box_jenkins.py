@@ -71,12 +71,12 @@ def run_analysis():
     print("🚀 Iniciando Análisis Box-Jenkins...")
     
     # 1. Cargar datos
-    ruta = 'data/processed/datos_depurados.parquet'
+    ruta = 'data/processed/datos_depurados.csv'
     if not os.path.exists(ruta):
         print(f"❌ No se encuentra: {ruta}")
         return
         
-    df = pd.read_parquet(ruta)
+    df = pd.read_csv(ruta)
     
     # Filtrar por rango de análisis solicitado (2020-2025)
     # El usuario pide analizar características SOBRE este periodo.

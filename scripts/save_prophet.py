@@ -8,8 +8,8 @@ try:
     from prophet import Prophet
     
     # Cargar datos
-    train = pd.read_parquet('data/features/train_mensual.parquet')
-    test = pd.read_parquet('data/features/test_mensual.parquet')
+    train = pd.read_csv('data/features/train_mensual.csv')
+    test = pd.read_csv('data/features/test_mensual.csv')
     
     # Preparar datos para Prophet
     df_prophet = train[['fecha', 'recaudo']].rename(columns={'fecha': 'ds', 'recaudo': 'y'})

@@ -12,17 +12,17 @@ from itertools import product
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 import xgboost as xgb
 import warnings
-def load_data(path, file_type='excel'):
+def load_data(path, file_type='csv'):
     """Loads data from a given path with error handling."""
     path = Path(path)
     if not path.exists():
         # Try to find with other extensions if exact match fails
-        if path.suffix == '.parquet' and path.with_suffix('.xlsx').exists():
+        if path.suffix == '.xlsx' and path.with_suffix('.csv').exists():
+            path = path.with_suffix('.csv')
+            file_type = 'csv'
+        elif path.suffix == '.csv' and path.with_suffix('.xlsx').exists():
             path = path.with_suffix('.xlsx')
             file_type = 'excel'
-        elif path.suffix == '.xlsx' and path.with_suffix('.parquet').exists():
-            path = path.with_suffix('.parquet')
-            file_type = 'parquet'
         else:
              raise FileNotFoundError(f"❌ File not found: {path}")
     
@@ -30,14 +30,10 @@ def load_data(path, file_type='excel'):
         # Auto-detect based on extension if not explicit
         if path.suffix == '.xlsx':
             file_type = 'excel'
-        elif path.suffix == '.parquet':
-            file_type = 'parquet'
         elif path.suffix == '.csv':
             file_type = 'csv'
 
-        if file_type == 'parquet':
-            df = pd.read_parquet(path)
-        elif file_type == 'csv':
+        if file_type == 'csv':
             df = pd.read_csv(path)
         elif file_type == 'excel':
             df = pd.read_excel(path)
@@ -49,25 +45,25 @@ def load_data(path, file_type='excel'):
         print(f"❌ Error loading {path}: {e}")
         return None
 
-def save_data(df, path, save_csv=True):
-    """Saves DataFrame to Excel/Parquet based on path suffix."""
+def save_data(df, path, save_csv=False):
+    """Saves DataFrame to CSV (default) or Excel based on path suffix."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     
     if path.suffix == '.xlsx':
         df.to_excel(path, index=False)
         print(f"💾 Saved Excel: {path}")
-    elif path.suffix == '.parquet':
-         df.to_parquet(path, index=False)
-         print(f"💾 Saved Parquet: {path}")
+    elif path.suffix == '.csv':
+        df.to_csv(path, index=False)
+        print(f"💾 Saved CSV: {path}")
     else:
-        # Default fallback if no extension provided or unknown
-        excel_path = path.with_suffix('.xlsx')
-        df.to_excel(excel_path, index=False)
-        print(f"💾 Saved Excel: {excel_path}")
+        # Default fallback: save as CSV
+        csv_path = path.with_suffix('.csv')
+        df.to_csv(csv_path, index=False)
+        print(f"💾 Saved CSV: {csv_path}")
     
-    # Save CSV
-    if save_csv:
+    # Optionally save additional CSV copy
+    if save_csv and path.suffix != '.csv':
         csv_path = path.with_suffix('.csv')
         df.to_csv(csv_path, index=False)
         print(f"💾 Saved CSV: {csv_path}")

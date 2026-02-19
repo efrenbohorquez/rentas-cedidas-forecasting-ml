@@ -18,9 +18,9 @@ def run_models():
     print("🚀 Iniciando Modelado Predictivo (Refactorizado)...")
     
     # 1. Cargar datos
-    train = utils.load_data(config.TRAIN_DATA_PARQUET)
-    test = utils.load_data(config.TEST_DATA_PARQUET)
-    full_df = utils.load_data(config.FULL_DATA_PARQUET)
+    train = utils.load_data(config.TRAIN_DATA_FILE)
+    test = utils.load_data(config.TEST_DATA_FILE)
+    full_df = utils.load_data(config.FULL_DATA_FILE)
     
     if train is None or test is None: return
 

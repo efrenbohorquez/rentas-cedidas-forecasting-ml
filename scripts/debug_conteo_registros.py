@@ -4,12 +4,12 @@ import os
 def auditar_registros():
     print("🔍 Auditoría de Registros y Entidades")
     
-    ruta = 'data/processed/datos_depurados.parquet'
+    ruta = 'data/processed/datos_depurados.csv'
     if not os.path.exists(ruta):
-        print("❌ No se encontró datos_depurados.parquet")
+        print("❌ No se encontró datos_depurados.csv")
         return
 
-    df = pd.read_parquet(ruta)
+    df = pd.read_csv(ruta)
     with open('debug_audit.txt', 'w') as f:
         f.write(f"1. Total registros detallados (transacciones): {len(df)}\n")
         

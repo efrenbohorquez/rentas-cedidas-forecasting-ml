@@ -18,10 +18,10 @@ def main():
     # 1. Cargar Datos
     # Usamos el dataset completo con lags ya generados, pero aplicaremos transformaciones específicas
     try:
-        df = utils.load_data(config.FULL_DATA_PARQUET)
+        df = utils.load_data(config.FULL_DATA_FILE)
     except:
-        print("⚠️ No se encontró dataset_completo.parquet, intentando dataset_historico_completo.parquet")
-        df = utils.load_data(config.DATA_FEATURES / 'dataset_historico_completo.parquet')
+        print("⚠️ No se encontró dataset_completo.csv, intentando dataset_historico_completo.csv")
+        df = utils.load_data(config.DATA_FEATURES / 'dataset_historico_completo.csv')
         
     if df is None:
         print("❌ Error: No se pudieron cargar los datos.")

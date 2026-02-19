@@ -14,7 +14,7 @@ def analyze_municipalities():
     print("📊 Iniciando Análisis Descriptivo Municipal (Refactorizado)...")
     
     # 1. Cargar datos
-    df = utils.load_data(config.CLEANED_DATA_PARQUET)
+    df = utils.load_data(config.CLEANED_DATA_FILE)
     if df is None: return
 
     # Filtro municipal
@@ -31,7 +31,7 @@ def analyze_municipalities():
     total_por_entidad['acumulado'] = total_por_entidad['recaudo'].cumsum() / total_recaudo
     total_por_entidad['porcentaje'] = total_por_entidad['recaudo'] / total_recaudo
     
-    utils.save_data(total_por_entidad, config.RESULTS_DIR / "municipal/estadisticas_descriptivas.parquet")
+    utils.save_data(total_por_entidad, config.RESULTS_DIR / "municipal/estadisticas_descriptivas.csv")
     
     # --- GRÁFICOS DESCRIPTIVOS ---
     utils.setup_plot_style()

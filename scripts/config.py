@@ -15,14 +15,13 @@ for d in [DATA_PROCESSED, DATA_FEATURES, RESULTS_DIR, MODELS_DIR]:
 # --- FILES ---
 # --- FILES ---
 RAW_EXCEL_FILE = "BaseRentasCedidas (1).xlsx" # Path relative to root or absolute if needed
-CLEANED_DATA_FILE = DATA_PROCESSED / "datos_depurados.xlsx" # Changed to .xlsx
-CLEANED_DATA_PARQUET = CLEANED_DATA_FILE # Alias for compatibility
-CLEANED_DATA_CSV = DATA_PROCESSED / "datos_depurados.csv"
+CLEANED_DATA_FILE = DATA_PROCESSED / "datos_depurados.csv"
+CLEANED_DATA_CSV = CLEANED_DATA_FILE  # Alias for compatibility
 
-TRAIN_DATA_FILE = DATA_FEATURES / "train_mensual.xlsx"
-TEST_DATA_FILE = DATA_FEATURES / "test_mensual.xlsx"
-FULL_DATA_FILE = DATA_FEATURES / "dataset_completo.xlsx"
-FULL_HISTORIC_DATA_FILE = DATA_FEATURES / 'dataset_historico_completo.xlsx'
+TRAIN_DATA_FILE = DATA_FEATURES / "train_mensual.csv"
+TEST_DATA_FILE = DATA_FEATURES / "test_mensual.csv"
+FULL_DATA_FILE = DATA_FEATURES / "dataset_completo.csv"
+FULL_HISTORIC_DATA_FILE = DATA_FEATURES / 'dataset_historico_completo.csv'
 
 # Monthly Data (Aliases for clarity)
 TRAIN_DATA_MENSUAL = TRAIN_DATA_FILE
@@ -30,24 +29,24 @@ TEST_DATA_MENSUAL = TEST_DATA_FILE
 FULL_DATA_MENSUAL = FULL_DATA_FILE
 
 # Aliases for compatibility with existing scripts
-TRAIN_DATA_PARQUET = TRAIN_DATA_FILE
-TEST_DATA_PARQUET = TEST_DATA_FILE
-FULL_DATA_PARQUET = FULL_DATA_FILE
+TRAIN_DATA_CSV = TRAIN_DATA_FILE
+TEST_DATA_CSV = TEST_DATA_FILE
+FULL_DATA_CSV = FULL_DATA_FILE
 
 # Quarterly Data
-TRAIN_DATA_TRIMESTRAL = DATA_FEATURES / "train_trimestral.xlsx"
-TEST_DATA_TRIMESTRAL = DATA_FEATURES / "test_trimestral.xlsx"
-FULL_DATA_TRIMESTRAL = DATA_FEATURES / "dataset_trimestral.xlsx"
+TRAIN_DATA_TRIMESTRAL = DATA_FEATURES / "train_trimestral.csv"
+TEST_DATA_TRIMESTRAL = DATA_FEATURES / "test_trimestral.csv"
+FULL_DATA_TRIMESTRAL = DATA_FEATURES / "dataset_trimestral.csv"
 
 # Bimonthly Data (Bimensual)
-TRAIN_DATA_BIMESTRAL = DATA_FEATURES / "train_bimestral.xlsx"
-TEST_DATA_BIMESTRAL = DATA_FEATURES / "test_bimestral.xlsx"
-FULL_DATA_BIMESTRAL = DATA_FEATURES / "dataset_bimestral.xlsx"
+TRAIN_DATA_BIMESTRAL = DATA_FEATURES / "train_bimestral.csv"
+TEST_DATA_BIMESTRAL = DATA_FEATURES / "test_bimestral.csv"
+FULL_DATA_BIMESTRAL = DATA_FEATURES / "dataset_bimestral.csv"
 
 # Semestral Data
-TRAIN_DATA_SEMESTRAL = DATA_FEATURES / "train_semestral.xlsx"
-TEST_DATA_SEMESTRAL = DATA_FEATURES / "test_semestral.xlsx"
-FULL_DATA_SEMESTRAL = DATA_FEATURES / "dataset_semestral.xlsx"
+TRAIN_DATA_SEMESTRAL = DATA_FEATURES / "train_semestral.csv"
+TEST_DATA_SEMESTRAL = DATA_FEATURES / "test_semestral.csv"
+FULL_DATA_SEMESTRAL = DATA_FEATURES / "dataset_semestral.csv"
 
 # --- DATES ---
 # --- DATES (Global Split) ---

@@ -133,7 +133,7 @@ def main():
     
     # Cargar Historia (Contexto 2020+)
     try:
-        df_hist_full = pd.read_parquet('data/features/dataset_historico_completo.parquet')
+        df_hist_full = pd.read_csv('data/features/dataset_historico_completo.csv')
         df_hist_full['fecha'] = pd.to_datetime(df_hist_full['fecha'])
         df_hist_full = df_hist_full[['fecha', 'recaudo']].rename(columns={'recaudo': 'Real'})
         

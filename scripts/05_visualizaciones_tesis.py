@@ -18,8 +18,8 @@ def generar_visualizaciones():
     pred_df = pd.read_csv('results/predictions/predicciones_comparativas.csv')
     pred_df['fecha'] = pd.to_datetime(pred_df['fecha'])
     
-    train = pd.read_parquet('data/features/train_mensual.parquet')
-    full_df = pd.read_parquet('data/features/dataset_completo.parquet')
+    train = pd.read_csv('data/features/train_mensual.csv')
+    full_df = pd.read_csv('data/features/dataset_completo.csv')
     
     modelos = [c for c in pred_df.columns if c not in ['fecha', 'Real']]
     

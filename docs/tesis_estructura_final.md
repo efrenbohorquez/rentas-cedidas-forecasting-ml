@@ -22,7 +22,7 @@ Se siguió un flujo de trabajo estructurado en 6 fases:
 
 1.  **Entendimiento del Negocio**: Definición de variables clave (Recaudo, Vigencia, Entidad).
 2.  **Entendimiento de los Datos**:
-    *   *Fuente:* Archivo parquet histórico (2018-2025).
+    *   *Fuente:* Archivo Excel/CSV histórico (2018-2025).
     *   *Limpieza:* (`01_limpieza_inicial.py`) Manejo de recaudos negativos (neteo mensual), unificación de fechas.
 3.  **Preparación de los Datos**:
     *   *Ingeniería de Características:* (`02_feature_engineering.py`) Creación de lags, medias móviles, variables calendario.

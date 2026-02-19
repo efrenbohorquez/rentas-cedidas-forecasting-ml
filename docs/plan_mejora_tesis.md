@@ -11,7 +11,7 @@ El código actual es funcional pero puede ser más robusto, modular y fácil de 
 ### A. Modularización
 *   **Problema:** Funciones repetidas (ej. carga de datos, cálculo de MAPE) en múltiples scripts.
 *   **Solución:** Crear un módulo `utils.py` compartido.
-    *   `utils.io`: Carga y guardado de datos (Parquet/CSV).
+    *   `utils.io`: Carga y guardado de datos (CSV/Excel).
     *   `utils.metrics`: Funciones de error (MAPE, RMSE, MAE).
     *   `utils.plots`: Estilos gráficos unificados para la tesis.
 

@@ -11,8 +11,8 @@ def run_ensemble():
     print("🚀 Iniciando Stacking Ensemble...")
     
     # 1. Cargar datos
-    train = utils.load_data(config.TRAIN_DATA_PARQUET)
-    test = utils.load_data(config.TEST_DATA_PARQUET)
+    train = utils.load_data(config.TRAIN_DATA_FILE)
+    test = utils.load_data(config.TEST_DATA_FILE)
     
     if train is None or test is None: return
 

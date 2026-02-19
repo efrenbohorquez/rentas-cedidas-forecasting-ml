@@ -7,9 +7,7 @@ import utils
 def load_data():
     """Carga los datos depurados."""
     # Usamos el dataset histórico completo generado en feature engineering
-    # config.DATA_FEATURES / 'dataset_historico_completo.parquet'
-    path = config.DATA_FEATURES / 'dataset_historico_completo.parquet'
-    return utils.load_data(path)
+    return utils.load_data(config.FULL_HISTORIC_DATA_FILE)
 
 def analyze_data_quality(df):
     """Genera estadísticas descriptivas de calidad de datos."""

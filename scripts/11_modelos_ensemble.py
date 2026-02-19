@@ -18,8 +18,8 @@ def run_ensemble():
     print("🚀 Iniciando Modelo Híbrido/Ensemble (Fase 4)...")
     
     # 1. Cargar datos
-    train = utils.load_data(config.TRAIN_DATA_PARQUET)
-    test = utils.load_data(config.TEST_DATA_PARQUET)
+    train = utils.load_data(config.TRAIN_DATA_FILE)
+    test = utils.load_data(config.TEST_DATA_FILE)
     
     if train is None or test is None: return
 
@@ -127,7 +127,7 @@ def run_ensemble():
     final_df = preds_test.copy()
     final_df['Real'] = y_test.values
     final_df['fecha'] = test['fecha'].values
-    utils.save_data(final_df, config.RESULTS_DIR / 'predictions/ensemble_results.parquet')
+    utils.save_data(final_df, config.RESULTS_DIR / 'predictions/ensemble_results.csv')
     
     # Graficar
     utils.setup_plot_style()

@@ -14,7 +14,7 @@ def analyze_volatility():
     print("📉 Iniciando Análisis de Volatilidad y Riesgo (Tesis)...")
     
     # 1. Cargar datos históricos agregados
-    df = utils.load_data(config.FULL_DATA_PARQUET)
+    df = utils.load_data(config.FULL_DATA_FILE)
     if df is None: return
     
     df = df.set_index('fecha').sort_index()

@@ -31,7 +31,7 @@ Se ha desarrollado un sistema de análisis predictivo para estimar el comportami
 ### 3.1 Depuración de Datos
 - **Fuente**: `BaseRentasCedidas (1).xlsx`
 - **Técnica**: Eliminación de valores negativos y limpieza de caracteres especiales en nombres de municipios.
-- **Formato**: Migración a **Apache Parquet** para optimizar lectura (50x más rápido).
+- **Formato**: Migración a **CSV** para máxima compatibilidad y portabilidad.
 
 ### 3.2 Ingeniería de Características
 - **Lags**: Rezagos de 1, 3, 6 y 12 meses para capturar ciclos anuales.

@@ -21,14 +21,14 @@ Este documento detalla los cambios realizados para optimizar el análisis predic
 ## 📂 Acceso a Datos (Formatos Unificados)
 Para facilitar la revisión y anexos de la tesis, se han generado versiones `.csv` de todos los pasos del proceso:
 
-| Etapa | Archivo Parquet (Interno) | Archivo CSV (Para Tesis) | Descripción |
-| :--- | :--- | :--- | :--- |
-| **1. Limpieza** | `data/processed/datos_depurados.parquet` | `data/processed/datos_depurados.csv` | Datos crudos con neteo de negativos. |
-| **2. Features** | `data/features/dataset_completo.parquet` | `data/features/dataset_completo.csv` | Dataset con lags, rolling windows y variables calendario. |
-| **3. Modeling** | `data/features/train_mensual.parquet` | `data/features/train_mensual.csv` | Set de entrenamiento (2020-2025). |
-| **3. Modeling** | `data/features/test_mensual.parquet` | `data/features/test_mensual.csv` | Set de prueba (2026). |
-| **4. Resultados** | N/A | `results/predictions/predicciones_comparativas.csv` | Comparativa punto a punto (Real vs Predicho). |
-| **5. Municipal** | N/A | `results/municipal/estadisticas_descriptivas.csv` | Resumen estadístico por municipio. |
+| Etapa | Archivo CSV | Descripción |
+| :--- | :--- | :--- |
+| **1. Limpieza** | `data/processed/datos_depurados.csv` | Datos crudos con neteo de negativos. |
+| **2. Features** | `data/features/dataset_completo.csv` | Dataset con lags, rolling windows y variables calendario. |
+| **3. Modeling** | `data/features/train_mensual.csv` | Set de entrenamiento (2020-2025). |
+| **3. Modeling** | `data/features/test_mensual.csv` | Set de prueba (2026). |
+| **4. Resultados** | `results/predictions/predicciones_comparativas.csv` | Comparativa punto a punto (Real vs Predicho). |
+| **5. Municipal** | `results/municipal/estadisticas_descriptivas.csv` | Resumen estadístico por municipio. |
 
 ## 2. Resultados de Validación (Demo 2023)
 
@@ -141,7 +141,7 @@ Se incorporó un nuevo módulo `10_analisis_avanzado.py` para responder pregunta
     *   **Stacking:** Entrenamiento de un meta-modelo (Ridge) que aprende a ponderar las predicciones base.
 *   **Salida:**
     *   `C:/Users/efren/.gemini/antigravity/brain/264cab6c-dede-4238-91fb-d7212f612bf6/ensemble_forecast.png`: Gráfico comparativo (Hybrid vs Single Models).
-    *   `results/predictions/ensemble_results.parquet`: Dataset final de proyecciones.
+    *   `results/predictions/ensemble_results.csv`: Dataset final de proyecciones.
 
 ## 6. Validación Final (Fase 5)
 *   **Ejecución Completa:** Se ejecutó `python scripts/main.py` validando la integración de todos los módulos.
