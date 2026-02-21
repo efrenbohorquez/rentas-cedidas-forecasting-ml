@@ -29,7 +29,7 @@ Se ha desarrollado un sistema de análisis predictivo para estimar el comportami
 ## 3. Metodología Implementada
 
 ### 3.1 Depuración de Datos
-- **Fuente**: `BaseRentasCedidas (1).xlsx`
+- **Fuente**: `BaseRentasVF_limpieza21feb.xlsx`
 - **Técnica**: Eliminación de valores negativos y limpieza de caracteres especiales en nombres de municipios.
 - **Formato**: Migración a **CSV** para máxima compatibilidad y portabilidad.
 

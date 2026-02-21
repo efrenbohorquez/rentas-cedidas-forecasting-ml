@@ -14,7 +14,7 @@ La investigación siguió un enfoque cuantitativo y experimental, estructurado e
 *   **Criterio de Éxito:** Lograr un Error Porcentual Absoluto Medio (MAPE) inferior al **12%** en horizontes de planeación (Trimestral/Semestral).
 
 ### Fase 2: Comprensión de los Datos (Data Understanding)
-*   **Fuente de Información:** Base de datos histórica oficial (`BaseRentasCedidas.xlsx`) suministrada por la entidad, abarcando las vigencias **2020 a 2025**.
+*   **Fuente de Información:** Base de datos histórica oficial (`BaseRentasVF_limpieza21feb.xlsx`) suministrada por la entidad, abarcando las vigencias **2020 a 2025**.
 *   **Variables Clave:**
     *   `Vigencia` (Año fiscal).
     *   `MesCalendario` (Temporalidad mensual).

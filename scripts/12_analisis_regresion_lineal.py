@@ -9,7 +9,7 @@ from sklearn.metrics import mean_absolute_error, r2_score
 import os
 
 # --- Configuración ---
-FILE_PATH = r'd:\RENTAS\BaseRentasCedidas (1).xlsx'
+FILE_PATH = r'd:\RENTAS\data\BaseRentasVF_limpieza21feb.xlsx'
 OUTPUT_DIR = r'd:\RENTAS\results'
 
 if not os.path.exists(OUTPUT_DIR):

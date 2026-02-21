@@ -2,7 +2,7 @@ from pathlib import Path
 
 # --- DIRECTORIES ---
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_RAW = BASE_DIR / "BS"  # Assuming input Excel is here or root
+DATA_RAW = BASE_DIR / "data"
 DATA_PROCESSED = BASE_DIR / "data" / "processed"
 DATA_FEATURES = BASE_DIR / "data" / "features"
 RESULTS_DIR = BASE_DIR / "results"
@@ -14,7 +14,7 @@ for d in [DATA_PROCESSED, DATA_FEATURES, RESULTS_DIR, MODELS_DIR]:
 
 # --- FILES ---
 # --- FILES ---
-RAW_EXCEL_FILE = "BaseRentasCedidas (1).xlsx" # Path relative to root or absolute if needed
+RAW_EXCEL_FILE = "BaseRentasVF_limpieza21feb.xlsx" # Path relative to root or absolute if needed
 CLEANED_DATA_FILE = DATA_PROCESSED / "datos_depurados.csv"
 CLEANED_DATA_CSV = CLEANED_DATA_FILE  # Alias for compatibility
 

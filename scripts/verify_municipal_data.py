@@ -1,14 +1,23 @@
 import pandas as pd
 import sys
 
+import os
+from pathlib import Path
+
 # Set output encoding to utf-8 just in case
 sys.stdout.reconfigure(encoding='utf-8')
 
+# Importar configuración
+script_dir = Path(__file__).resolve().parent
+if str(script_dir) not in sys.path:
+    sys.path.append(str(script_dir))
+
 try:
-    print("Leyendo archivo Excel...")
+    from config import DATA_RAW, RAW_EXCEL_FILE
+    print(f"Leyendo archivo Excel desde: {DATA_RAW / RAW_EXCEL_FILE}")
     # Read a chunk to be faster, but enough rows to likely find municipalities if they are mixed in
     # The user says the variable contains municipalities. Let's read 2000 rows.
-    df = pd.read_excel('BaseRentasCedidas (1).xlsx', nrows=2000)
+    df = pd.read_excel(DATA_RAW / RAW_EXCEL_FILE, nrows=2000)
     
     print("Limpiando nombres de columnas...")
     # Clean columns as per 01_limpieza_inicial.py

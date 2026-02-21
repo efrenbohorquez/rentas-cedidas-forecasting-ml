@@ -1,16 +1,11 @@
 === COLUMNAS ===
-'  Vigencia'
-'  MesNombreCalendario'
 '  FechaRecaudo'
-'  NumeroCuentaBancaria'
 '  NombreCuentaBancaria'
-'  NombreBanco'
 '  NitBeneficiarioAportante'
 '  NombreBeneficiarioAportante'
 '  ValorRecaudo'
 '  CódigoRubroPptal'
 '  Nombre de Rubro'
-'  CódigoGrupoFuente'
 '  NombreGrupoFuente'
 '  CódigoSubGrupoFuente'
 '  NombreSubGrupoFuente'
@@ -18,37 +13,25 @@
 '  NombreConcepto'
 '  CódigoTipoRegistro'
 '  TipoRegistro'
-'  Responsable'
-'  CantidadOperaciones'
-'  ID_Transacción'
-'  Grupo_Aportante'
-'  Cant_Gr_Aport'
-'  Nombre_Grupo_Aportante'
 '  SubGrupo_Aportante'
-'  Cant_SubGr_Aport'
 '  Nombre_SubGrupo_Aportante'
 
 === HEAD (5 filas) ===
-     Vigencia   MesNombreCalendario   FechaRecaudo    NumeroCuentaBancaria                                   NombreCuentaBancaria         NombreBanco    NitBeneficiarioAportante   NombreBeneficiarioAportante    ValorRecaudo    CódigoRubroPptal                                            Nombre de Rubro    CódigoGrupoFuente                                            NombreGrupoFuente    CódigoSubGrupoFuente                                NombreSubGrupoFuente   CódigoConcepto                                              NombreConcepto   CódigoTipoRegistro   TipoRegistro   Responsable    CantidadOperaciones    ID_Transacción    Grupo_Aportante    Cant_Gr_Aport   Nombre_Grupo_Aportante    SubGrupo_Aportante    Cant_SubGr_Aport   Nombre_SubGrupo_Aportante
-0        2020                Enero      2020-01-02               513845701  IMPUESTO CONSUMO LICORES VINOS APERITIVOS Y SIMILARES  BANCO DE OCCIDENTE                   891680010            Departamento CHOCÓ        60000000  1-02-6-04-01-14-01  Recursos Departamentales y Distritales para Aseguramiento                   11  ADMINISTRACIÓN DE RENTAS CEDIDAS DE LOS ENTES TERRITORIALES                     114  Impoconsumo Licores, Vinos, Aperitivos y Similares          1102-20  Licores Y Alcohol (Licores Vinos Aperitivos Similares) Nal           1102-20-01        Recaudo      Paula P.                      1              4443                  2                1       Régimen Subsidiado                    21                   1     Entidades Territoriales
-1        2020                Enero      2020-01-02               513845644            IMPUESTO CONSUMO CERVEZAS SIFONES Y REFAJOS  BANCO DE OCCIDENTE                   891680010            Departamento CHOCÓ        10000000  1-02-6-04-01-14-01  Recursos Departamentales y Distritales para Aseguramiento                   11  ADMINISTRACIÓN DE RENTAS CEDIDAS DE LOS ENTES TERRITORIALES                     113                      Impoconsumo Cervezas y Sifones          1102-07            Impoconsumo De Cerveza (Iva Del 8% Cerveza) Nal.           1102-07-01        Recaudo      Paula P.                      1              4444                  2                1       Régimen Subsidiado                    21                   1     Entidades Territoriales
-2        2020                Enero      2020-01-02               513845701  IMPUESTO CONSUMO LICORES VINOS APERITIVOS Y SIMILARES  BANCO DE OCCIDENTE                   891680010            Departamento CHOCÓ         2577235  1-02-6-04-01-14-01  Recursos Departamentales y Distritales para Aseguramiento                   11  ADMINISTRACIÓN DE RENTAS CEDIDAS DE LOS ENTES TERRITORIALES                     114  Impoconsumo Licores, Vinos, Aperitivos y Similares          1102-20  Licores Y Alcohol (Licores Vinos Aperitivos Similares) Nal           1102-20-01        Recaudo      Paula P.                      1              4445                  2                1       Régimen Subsidiado                    21                   1     Entidades Territoriales
-3        2020                Enero      2020-01-02               513845701  IMPUESTO CONSUMO LICORES VINOS APERITIVOS Y SIMILARES  BANCO DE OCCIDENTE                   891680010            Departamento CHOCÓ         8528870  1-02-6-04-01-14-01  Recursos Departamentales y Distritales para Aseguramiento                   11  ADMINISTRACIÓN DE RENTAS CEDIDAS DE LOS ENTES TERRITORIALES                     114  Impoconsumo Licores, Vinos, Aperitivos y Similares          1102-20  Licores Y Alcohol (Licores Vinos Aperitivos Similares) Nal           1102-20-01        Recaudo      Paula P.                      1              4446                  2                1       Régimen Subsidiado                    21                   1     Entidades Territoriales
-4        2020                Enero      2020-01-02               513845701  IMPUESTO CONSUMO LICORES VINOS APERITIVOS Y SIMILARES  BANCO DE OCCIDENTE                   891580016            Departamento CAUCA       559944125  1-02-6-04-01-14-01  Recursos Departamentales y Distritales para Aseguramiento                   11  ADMINISTRACIÓN DE RENTAS CEDIDAS DE LOS ENTES TERRITORIALES                     114  Impoconsumo Licores, Vinos, Aperitivos y Similares          1102-25                         Monopolio De Licores Destilados Nal           1102-25-01        Recaudo      Paula P.                      1              4447                  2                1       Régimen Subsidiado                    21                   1     Entidades Territoriales
+    FechaRecaudo                                   NombreCuentaBancaria    NitBeneficiarioAportante   NombreBeneficiarioAportante    ValorRecaudo    CódigoRubroPptal                                            Nombre de Rubro                                            NombreGrupoFuente    CódigoSubGrupoFuente                                NombreSubGrupoFuente   CódigoConcepto                                              NombreConcepto   CódigoTipoRegistro   TipoRegistro    SubGrupo_Aportante   Nombre_SubGrupo_Aportante
+0     2020-01-02  IMPUESTO CONSUMO LICORES VINOS APERITIVOS Y SIMILARES                   891680010            Departamento CHOCÓ        60000000  1-02-6-04-01-14-01  Recursos Departamentales y Distritales para Aseguramiento  ADMINISTRACIÓN DE RENTAS CEDIDAS DE LOS ENTES TERRITORIALES                     114  Impoconsumo Licores, Vinos, Aperitivos y Similares          1102-20  Licores Y Alcohol (Licores Vinos Aperitivos Similares) Nal           1102-20-01        Recaudo                    21     Entidades Territoriales
+1     2020-01-02            IMPUESTO CONSUMO CERVEZAS SIFONES Y REFAJOS                   891680010            Departamento CHOCÓ        10000000  1-02-6-04-01-14-01  Recursos Departamentales y Distritales para Aseguramiento  ADMINISTRACIÓN DE RENTAS CEDIDAS DE LOS ENTES TERRITORIALES                     113                      Impoconsumo Cervezas y Sifones          1102-07            Impoconsumo De Cerveza (Iva Del 8% Cerveza) Nal.           1102-07-01        Recaudo                    21     Entidades Territoriales
+2     2020-01-02  IMPUESTO CONSUMO LICORES VINOS APERITIVOS Y SIMILARES                   891680010            Departamento CHOCÓ         2577235  1-02-6-04-01-14-01  Recursos Departamentales y Distritales para Aseguramiento  ADMINISTRACIÓN DE RENTAS CEDIDAS DE LOS ENTES TERRITORIALES                     114  Impoconsumo Licores, Vinos, Aperitivos y Similares          1102-20  Licores Y Alcohol (Licores Vinos Aperitivos Similares) Nal           1102-20-01        Recaudo                    21     Entidades Territoriales
+3     2020-01-02  IMPUESTO CONSUMO LICORES VINOS APERITIVOS Y SIMILARES                   891680010            Departamento CHOCÓ         8528870  1-02-6-04-01-14-01  Recursos Departamentales y Distritales para Aseguramiento  ADMINISTRACIÓN DE RENTAS CEDIDAS DE LOS ENTES TERRITORIALES                     114  Impoconsumo Licores, Vinos, Aperitivos y Similares          1102-20  Licores Y Alcohol (Licores Vinos Aperitivos Similares) Nal           1102-20-01        Recaudo                    21     Entidades Territoriales
+4     2020-01-02  IMPUESTO CONSUMO LICORES VINOS APERITIVOS Y SIMILARES                   891580016            Departamento CAUCA       559944125  1-02-6-04-01-14-01  Recursos Departamentales y Distritales para Aseguramiento  ADMINISTRACIÓN DE RENTAS CEDIDAS DE LOS ENTES TERRITORIALES                     114  Impoconsumo Licores, Vinos, Aperitivos y Similares          1102-25                         Monopolio De Licores Destilados Nal           1102-25-01        Recaudo                    21     Entidades Territoriales
 
 === TIPOS DE DATOS ===
-  Vigencia                                int64
-  MesNombreCalendario                    object
   FechaRecaudo                   datetime64[ns]
-  NumeroCuentaBancaria                    int64
   NombreCuentaBancaria                   object
-  NombreBanco                            object
   NitBeneficiarioAportante                int64
   NombreBeneficiarioAportante            object
   ValorRecaudo                            int64
   CódigoRubroPptal                       object
   Nombre de Rubro                        object
-  CódigoGrupoFuente                       int64
   NombreGrupoFuente                      object
   CódigoSubGrupoFuente                    int64
   NombreSubGrupoFuente                   object
@@ -56,13 +39,6 @@
   NombreConcepto                         object
   CódigoTipoRegistro                     object
   TipoRegistro                           object
-  Responsable                            object
-  CantidadOperaciones                     int64
-  ID_Transacción                          int64
-  Grupo_Aportante                         int64
-  Cant_Gr_Aport                           int64
-  Nombre_Grupo_Aportante                 object
   SubGrupo_Aportante                      int64
-  Cant_SubGr_Aport                        int64
   Nombre_SubGrupo_Aportante              object
 dtype: object

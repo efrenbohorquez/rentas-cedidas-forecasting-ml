@@ -1,8 +1,18 @@
 import pandas as pd
 import os
 
-ruta_excel = 'BaseRentasCedidas (1).xlsx'
-if not os.path.exists(ruta_excel):
+from pathlib import Path
+import sys
+
+# Importar configuración
+script_dir = Path(__file__).resolve().parent
+if str(script_dir) not in sys.path:
+    sys.path.append(str(script_dir))
+
+from config import DATA_RAW, RAW_EXCEL_FILE
+
+ruta_excel = DATA_RAW / RAW_EXCEL_FILE
+if not ruta_excel.exists():
     print(f"❌ Archivo no encontrado: {ruta_excel}")
 else:
     print(f"📂 Leyendo archivo: {ruta_excel}...")

@@ -1,0 +1,548 @@
+Total celdas: 29
+
+=== Celda 0 [markdown] ===
+# Análisis Exploratorio de Datos y Depuración
+# Recaudo de Rentas Cedidas - Series de Tiempo 2026
+
+---
+
+## 📊 Objetivo
+
+Este cuaderno implementa el **diagnóstico completo y depuración estructural** de los datos de recaudo para preparar el modelado predictivo con técnicas de series de tiempo de última generación (2026).
+
+### Alcance del Análisis:
+1. **Exploración inicial**: Estructura, dimensiones, tipos de datos
+2. **Diagnóstico de calidad**: Valores faltantes, duplicados, inconsistencias
+3. **Identificación de anomalías**: Outliers extremos, valores negativos, transacciones en escala cero
+4. **Depuración estructural**: Limpieza, normalización, validación de integridad
+5. **Análisis temporal**: Rangos, gaps, estacionalidad preliminar
+
+---
+
+**Autor**: Sistema de Análisis Predictivo  
+**Fecha**: Febrero 2026  
+**Versión**: 1.0
+
+=== Celda 1 [markdown] ===
+## 1. Configuración del Entorno
+
+=== Celda 2 [code] ===
+pip install missingno
+
+=== Celda 3 [code] ===
+# Importar bibliotecas necesarias
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import warnings
+from datetime import datetime
+import missingno as msno
+from scipy import stats
+from sklearn.ensemble import IsolationForest
+
+# Configuración de visualización
+warnings.filterwarnings('ignore')
+plt.style.use('seaborn-v0_8-darkgrid')
+sns.set_palette("husl")
+%matplotlib inline
+
+# Configuración de pandas
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', 100)
+pd.set_option('display.float_format', '{:.2f}'.format)
+
+print("✅ Bibliotecas cargadas exitosamente")
+print(f"📅 Fecha de ejecución: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+=== Celda 4 [markdown] ===
+## 2. Carga de Datos
+
+=== Celda 5 [code] ===
+# Cargar datos desde Excel
+print("📁 Cargando datos de BaseRentasVF_limpieza21feb.xlsx...")
+df_raw = pd.read_excel('D:\\RENTAS\\data\\BaseRentasVF_limpieza21feb.xlsx')
+
+print(f"\n✅ Datos cargados exitosamente")
+print(f"📊 Dimensiones: {df_raw.shape[0]:,} filas × {df_raw.shape[1]} columnas")
+print(f"💾 Memoria utilizada: {df_raw.memory_usage(deep=True).sum() / 1024**2:.2f} MB")
+
+=== Celda 6 [markdown] ===
+## 3. Exploración Inicial de Estructura
+
+=== Celda 7 [code] ===
+# Información general del dataset
+print("=" * 80)
+print("INFORMACIÓN GENERAL DEL DATASET")
+print("=" * 80)
+df_raw.info()
+
+print("\n" + "=" * 80)
+print("PRIMERAS 10 FILAS")
+print("=" * 80)
+display(df_raw.head(10))
+
+print("\n" + "=" * 80)
+print("COLUMNAS DISPONIBLES")
+print("=" * 80)
+for i, col in enumerate(df_raw.columns, 1):
+    print(f"{i:2d}. {col}")
+
+=== Celda 8 [markdown] ===
+# Identificar columnas con datos temporales y de recaudo
+columnas_temporales = [col for col in df_raw.columns if any(x in col.lower() for x in ['vigencia', 'fecha', 'periodo', 'año', 'mes'])]
+columnas_recaudo = [col for col in df_raw.columns if any(x in col.lower() for x in ['valor', 'monto', 'ingreso'])]
+# Nota: Se removió 'recaudo' del filtro de recaudo para evitar que 'FechaRecaudo' aparezca como columna de recaudo
+
+print("🗓️  COLUMNAS TEMPORALES DETECTADAS:")
+for col in columnas_temporales:
+    print(f"  - {col}")
+    if col in df_raw.columns:
+        print(f"    Valores únicos: {df_raw[col].nunique()}")
+        print(f"    Rango: {df_raw[col].min()} - {df_raw[col].max()}")
+        print(f"    Tipo: {df_raw[col].dtype}")
+        # Diagnóstico especial para MesNombreCalendario
+        if 'mes' in col.lower() and df_raw[col].dtype == 'object':
+            valores = df_raw[col].unique()
+            print(f"    ⚠️  Valores encontrados ({len(valores)}): {sorted(valores)}")
+            # Normalizar a título (ej: "Enero") para ver cuántos meses reales hay
+            meses_normalizados = df_raw[col].str.strip().str.capitalize().nunique()
+            print(f"    ✅ Meses reales (tras normalizar capitalización): {meses_normalizados}")
+        print()
+
+print("\n💰 COLUMNAS DE RECAUDO DETECTADAS:")
+for col in columnas_recaudo:
+    print(f"  - {col}")
+    if col in df_raw.columns:
+        print(f"    Valores no nulos: {df_raw[col].notna().sum():,} ({df_raw[col].notna().sum()/len(df_raw)*100:.1f}%)")
+        print(f"    Tipo: {df_raw[col].dtype}")
+        # Alerta si el tipo no es numérico
+        if df_raw[col].dtype == 'object':
+            print(f"    ⚠️  ALERTA: Esta columna es tipo texto. Requiere conversión a numérico.")
+            print(f"    Muestra de valores: {df_raw[col].head(5).tolist()}")
+        print()
+
+=== Celda 9 [code] ===
+# ===== LIMPIEZA PREVENTIVA =====
+# 1. Normalizar MesNombreCalendario (corregir capitalización inconsistente)
+if '  MesNombreCalendario' in df_raw.columns:
+    col_mes = '  MesNombreCalendario'
+elif 'MesNombreCalendario' in df_raw.columns:
+    col_mes = 'MesNombreCalendario'
+else:
+    col_mes = [c for c in df_raw.columns if 'mes' in c.lower() and 'nombre' in c.lower()]
+    col_mes = col_mes[0] if col_mes else None
+
+if col_mes:
+    antes = df_raw[col_mes].nunique()
+    df_raw[col_mes] = df_raw[col_mes].str.strip().str.capitalize()
+    despues = df_raw[col_mes].nunique()
+    print(f"✅ '{col_mes}' normalizado: {antes} valores únicos → {despues} valores únicos")
+    print(f"   Meses resultantes: {sorted(df_raw[col_mes].unique())}")
+
+# 2. Convertir ValorRecaudo de texto a numérico
+if '  ValorRecaudo' in df_raw.columns:
+    col_valor = '  ValorRecaudo'
+elif 'ValorRecaudo' in df_raw.columns:
+    col_valor = 'ValorRecaudo'
+else:
+    col_valor = [c for c in df_raw.columns if 'valor' in c.lower() and 'recaudo' in c.lower()]
+    col_valor = col_valor[0] if col_valor else None
+
+if col_valor and df_raw[col_valor].dtype == 'object':
+    print(f"\n🔧 Convirtiendo '{col_valor}' de texto a numérico...")
+    # Limpiar: quitar $, espacios, puntos de miles, reemplazar coma decimal
+    df_raw[col_valor] = (
+        df_raw[col_valor]
+        .astype(str)
+        .str.replace('$', '', regex=False)
+        .str.replace(' ', '', regex=False)
+        .str.strip()
+    )
+    df_raw[col_valor] = pd.to_numeric(df_raw[col_valor], errors='coerce')
+    nulos_creados = df_raw[col_valor].isna().sum()
+    print(f"✅ '{col_valor}' convertido a {df_raw[col_valor].dtype}")
+    if nulos_creados > 0:
+        print(f"⚠️  {nulos_creados:,} valores no pudieron convertirse (quedaron como NaN)")
+    else:
+        print(f"✅ Todos los valores convertidos exitosamente")
+    print(f"   Rango: {df_raw[col_valor].min():,.2f} - {df_raw[col_valor].max():,.2f}")
+
+=== Celda 10 [markdown] ===
+## 4. Identificación de Columnas Clave para Series de Tiempo
+
+Para el análisis de series de tiempo, necesitamos identificar:
+- **Variable temporal**: Vigencia, Fecha, Periodo, etc.
+- **Variable objetivo (target)**: Valor de recaudo
+- **Variables auxiliares**: Tipo de renta, entidad, categoría, etc.
+
+=== Celda 11 [markdown] ===
+## 5. Diagnóstico de Calidad de Datos
+
+=== Celda 12 [code] ===
+# Análisis de valores faltantes
+print("=" * 80)
+print("ANÁLISIS DE VALORES FALTANTES")
+print("=" * 80)
+
+missing_data = pd.DataFrame({
+    'Columna': df_raw.columns,
+    'Valores_Faltantes': df_raw.isnull().sum(),
+    'Porcentaje': (df_raw.isnull().sum() / len(df_raw) * 100).round(2)
+}).sort_values('Porcentaje', ascending=False)
+
+missing_data = missing_data[missing_data['Valores_Faltantes'] > 0]
+
+if len(missing_data) > 0:
+    display(missing_data)
+    
+    # Visualización con missingno
+    fig, ax = plt.subplots(figsize=(14, 6))
+    msno.matrix(df_raw, ax=ax, sparkline=False)
+    plt.title('Matriz de Valores Faltantes', fontsize=14, fontweight='bold')
+    plt.tight_layout()
+    plt.show()
+else:
+    print("✅ No se detectaron valores faltantes")
+
+=== Celda 13 [code] ===
+# Análisis de duplicados
+print("=" * 80)
+print("ANÁLISIS DE REGISTROS DUPLICADOS")
+print("=" * 80)
+
+duplicados_totales = df_raw.duplicated().sum()
+print(f"Duplicados completos: {duplicados_totales:,} ({duplicados_totales/len(df_raw)*100:.2f}%)")
+
+if duplicados_totales > 0:
+    print("\n⚠️  Se detectaron registros duplicados que requieren revisión")
+else:
+    print("✅ No se detectaron duplicados completos")
+
+=== Celda 14 [markdown] ===
+## 6. Preparación de Datos para Análisis Temporal
+
+
+
+=== Celda 15 [code] ===
+
+
+=== Celda 16 [code] ===
+# ── Normalización de nombres de columnas ──────────────────────────────────────
+RENAME_COLS = {
+    'FechaRecaudo'                : 'FechaRecaudo',
+    'NitBeneficiarioAportante'    : 'NitBeneficiarioAportante',
+    'NombreBeneficiarioAportante' : 'NombreBeneficiarioAportante',
+    'ValorRecaudo'                : 'ValorRecaudo',
+    'Nombre de Rubro'             : 'NombreRubro',          # espacio → sin espacio
+    'NombreGrupoFuente'           : 'NombreGrupoFuente',
+    'CódigoSubGrupoFuente'        : 'CodigoSubGrupoFuente', # acento eliminado
+    'NombreSubGrupoFuente'        : 'NombreSubGrupoFuente',
+    'CódigoConcepto'              : 'CodigoConcepto',       # acento eliminado
+    'NombreConcepto'              : 'NombreConcepto',
+    'CódigoTipoRegistro'          : 'CodigoTipoRegistro',   # acento eliminado
+    'TipoRegistro'                : 'TipoRegistro',
+    'Nombre_SubGrupo_Aportante'   : 'Nombre_SubGrupo_Aportante',
+}
+
+df_raw = df_raw.rename(columns=RENAME_COLS)
+print("✅ Columnas normalizadas:", df_raw.columns.tolist())
+
+=== Celda 17 [markdown] ===
+## 7. Análisis Estadístico de la Variable Objetivo (Recaudo)
+
+=== Celda 18 [code] ===
+# ══════════════════════════════════════════════════════════════════════════════
+# 7. ANÁLISIS ESTADÍSTICO DE LA VARIABLE OBJETIVO (RECAUDO)
+# ══════════════════════════════════════════════════════════════════════════════
+from scipy import stats
+import warnings
+warnings.filterwarnings('ignore')
+
+target = 'ValorRecaudo'
+s = df_raw[target].dropna()
+
+# ── 7.1 Estadísticas descriptivas ─────────────────────────────────────────────
+desc = s.describe(percentiles=[.05, .25, .5, .75, .95])
+iqr  = desc['75%'] - desc['25%']
+cv   = (s.std() / s.mean()) * 100
+skew = s.skew()
+kurt = s.kurtosis()
+
+print("=" * 55)
+print("  ESTADÍSTICAS DESCRIPTIVAS — ValorRecaudo")
+print("=" * 55)
+print(f"  N (total)        : {len(s):>15,.0f}")
+print(f"  Media            : {s.mean():>15,.2f}")
+print(f"  Mediana          : {s.median():>15,.2f}")
+print(f"  Desv. estándar   : {s.std():>15,.2f}")
+print(f"  CV (%)           : {cv:>15.1f}")
+print(f"  Mínimo           : {s.min():>15,.2f}")
+print(f"  P5               : {desc['5%']:>15,.2f}")
+print(f"  P25              : {desc['25%']:>15,.2f}")
+print(f"  P75              : {desc['75%']:>15,.2f}")
+print(f"  P95              : {desc['95%']:>15,.2f}")
+print(f"  Máximo           : {s.max():>15,.2f}")
+print(f"  IQR              : {iqr:>15,.2f}")
+print(f"  Asimetría        : {skew:>15.4f}")
+print(f"  Curtosis         : {kurt:>15.4f}")
+print("=" * 55)
+
+# ── 7.2 Prueba de normalidad (Shapiro si n<5000, else KS) ─────────────────────
+if len(s) <= 5000:
+    stat, p = stats.shapiro(s)
+    test_name = "Shapiro-Wilk"
+else:
+    stat, p = stats.kstest(s, 'norm', args=(s.mean(), s.std()))
+    test_name = "Kolmogorov-Smirnov"
+
+print(f"\n  Prueba {test_name}: stat={stat:.4f}, p={p:.4e}")
+print(f"  → {'NO normal (p<0.05)' if p < 0.05 else 'Normal (p≥0.05)'}")
+
+# ── 7.3 Visualizaciones ───────────────────────────────────────────────────────
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.suptitle("Análisis Estadístico — ValorRecaudo", fontsize=14, fontweight='bold')
+
+# Histograma + KDE
+ax = axes[0, 0]
+ax.hist(s, bins=60, color='steelblue', edgecolor='white', alpha=0.8, density=True)
+s.plot(kind='kde', ax=ax, color='crimson', linewidth=2)
+ax.set_title("Distribución (Histograma + KDE)")
+ax.set_xlabel("ValorRecaudo"); ax.set_ylabel("Densidad")
+
+# Boxplot
+ax = axes[0, 1]
+ax.boxplot(s, vert=False, patch_artist=True,
+           boxprops=dict(facecolor='steelblue', alpha=0.6),
+           medianprops=dict(color='crimson', linewidth=2))
+ax.set_title("Boxplot — Dispersión y Outliers")
+ax.set_xlabel("ValorRecaudo")
+
+# Log-transformada
+ax = axes[1, 0]
+s_log = np.log1p(s[s > 0])
+ax.hist(s_log, bins=60, color='seagreen', edgecolor='white', alpha=0.8, density=True)
+s_log.plot(kind='kde', ax=ax, color='darkorange', linewidth=2)
+ax.set_title("Distribución log1p(ValorRecaudo)")
+ax.set_xlabel("log1p(ValorRecaudo)"); ax.set_ylabel("Densidad")
+
+# Q-Q plot
+ax = axes[1, 1]
+(osm, osr), (slope, intercept, r) = stats.probplot(s, dist="norm")
+ax.scatter(osm, osr, s=6, color='steelblue', alpha=0.5)
+ax.plot(osm, slope * np.array(osm) + intercept, color='crimson', linewidth=1.5)
+ax.set_title(f"Q-Q Plot Normal (R²={r**2:.4f})")
+ax.set_xlabel("Cuantiles teóricos"); ax.set_ylabel("Cuantiles observados")
+
+plt.tight_layout()
+plt.show()
+
+# ── 7.4 Detección de outliers (IQR) ───────────────────────────────────────────
+lower = desc['25%'] - 1.5 * iqr
+upper = desc['75%'] + 1.5 * iqr
+out_mask = (s < lower) | (s > upper)
+print(f"\n  Outliers IQR: {out_mask.sum():,} ({out_mask.mean()*100:.1f}% del total)")
+print(f"  Límite inferior: {lower:,.2f}")
+print(f"  Límite superior: {upper:,.2f}")
+
+=== Celda 19 [markdown] ===
+## 8. Visualización de Distribución de Recaudo
+
+=== Celda 20 [code] ===
+# ══════════════════════════════════════════════════════════════════════════════
+# 7. ANÁLISIS ESTADÍSTICO DE LA VARIABLE OBJETIVO (RECAUDO)
+# ══════════════════════════════════════════════════════════════════════════════
+from scipy import stats
+import warnings
+warnings.filterwarnings('ignore')
+
+target = 'ValorRecaudo'
+s = df_raw[target].dropna()
+
+# ── 7.1 Estadísticas descriptivas ─────────────────────────────────────────────
+desc = s.describe(percentiles=[.05, .25, .5, .75, .95])
+iqr  = desc['75%'] - desc['25%']
+cv   = (s.std() / s.mean()) * 100
+
+print("=" * 55)
+print("  ESTADÍSTICAS DESCRIPTIVAS — ValorRecaudo")
+print("=" * 55)
+print(f"  N (total)        : {len(s):>15,.0f}")
+print(f"  Media            : {s.mean():>15,.2f}")
+print(f"  Mediana          : {s.median():>15,.2f}")
+print(f"  Desv. estándar   : {s.std():>15,.2f}")
+print(f"  CV (%)           : {cv:>15.1f}")
+print(f"  Mínimo           : {s.min():>15,.2f}")
+print(f"  P5               : {desc['5%']:>15,.2f}")
+print(f"  P25              : {desc['25%']:>15,.2f}")
+print(f"  P75              : {desc['75%']:>15,.2f}")
+print(f"  P95              : {desc['95%']:>15,.2f}")
+print(f"  Máximo           : {s.max():>15,.2f}")
+print(f"  IQR              : {iqr:>15,.2f}")
+print(f"  Asimetría        : {s.skew():>15.4f}")
+print(f"  Curtosis         : {s.kurtosis():>15.4f}")
+print("=" * 55)
+
+# ── 7.2 Prueba de normalidad ───────────────────────────────────────────────────
+if len(s) <= 5000:
+    stat, p = stats.shapiro(s)
+    test_name = "Shapiro-Wilk"
+else:
+    stat, p = stats.kstest(s, 'norm', args=(s.mean(), s.std()))
+    test_name = "Kolmogorov-Smirnov"
+
+print(f"\n  Prueba {test_name}: stat={stat:.4f}, p={p:.4e}")
+print(f"  → {'NO normal (p<0.05)' if p < 0.05 else 'Normal (p≥0.05)'}")
+
+# ── 7.3 Visualizaciones ───────────────────────────────────────────────────────
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.suptitle("Análisis Estadístico — ValorRecaudo", fontsize=14, fontweight='bold')
+
+# Histograma + KDE
+ax = axes[0, 0]
+ax.hist(s, bins=60, color='steelblue', edgecolor='white', alpha=0.8, density=True)
+s.plot(kind='kde', ax=ax, color='crimson', linewidth=2)
+ax.set_title("Distribución (Histograma + KDE)")
+ax.set_xlabel("ValorRecaudo"); ax.set_ylabel("Densidad")
+
+# Boxplot  ← 'orientation' reemplaza 'vert' en matplotlib ≥ 3.9
+ax = axes[0, 1]
+bp_kwargs = dict(patch_artist=True,
+                 boxprops=dict(facecolor='steelblue', alpha=0.6),
+                 medianprops=dict(color='crimson', linewidth=2))
+try:
+    ax.boxplot(s, orientation='horizontal', **bp_kwargs)
+except TypeError:           # matplotlib < 3.9
+    ax.boxplot(s, vert=False, **bp_kwargs)
+ax.set_title("Boxplot — Dispersión y Outliers")
+ax.set_xlabel("ValorRecaudo")
+
+# Log-transformada
+ax = axes[1, 0]
+s_log = np.log1p(s[s > 0])
+ax.hist(s_log, bins=60, color='seagreen', edgecolor='white', alpha=0.8, density=True)
+s_log.plot(kind='kde', ax=ax, color='darkorange', linewidth=2)
+ax.set_title("Distribución log1p(ValorRecaudo)")
+ax.set_xlabel("log1p(ValorRecaudo)"); ax.set_ylabel("Densidad")
+
+# Q-Q plot
+ax = axes[1, 1]
+(osm, osr), (slope, intercept, r) = stats.probplot(s, dist='norm')
+ax.scatter(osm, osr, s=6, color='steelblue', alpha=0.5)
+ax.plot(osm, slope * np.array(osm) + intercept, color='crimson', linewidth=1.5)
+ax.set_title(f"Q-Q Plot Normal (R²={r**2:.4f})")
+ax.set_xlabel("Cuantiles teóricos"); ax.set_ylabel("Cuantiles observados")
+
+plt.tight_layout()
+plt.show()
+
+# ── 7.4 Detección de outliers (IQR) ───────────────────────────────────────────
+lower = desc['25%'] - 1.5 * iqr
+upper = desc['75%'] + 1.5 * iqr
+out_mask = (s < lower) | (s > upper)
+print(f"\n  Outliers IQR : {out_mask.sum():,} ({out_mask.mean()*100:.1f}% del total)")
+print(f"  Límite inferior: {lower:,.2f}")
+print(f"  Límite superior: {upper:,.2f}")
+
+=== Celda 21 [markdown] ===
+## 9. Detección de Outliers con Isolation Forest
+
+=== Celda 22 [code] ===
+if columna_recaudo and columna_recaudo in df_raw.columns:
+    recaudo_valido = df_raw[columna_recaudo].replace([np.inf, -np.inf], np.nan).dropna()
+    
+    if len(recaudo_valido) > 100:
+        print("🔍 Detectando outliers con Isolation Forest...")
+        
+        # Preparar datos
+        X = recaudo_valido.values.reshape(-1, 1)
+        
+        # Entrenar modelo
+        iso_forest = IsolationForest(contamination=0.05, random_state=42)
+        outlier_labels = iso_forest.fit_predict(X)
+        
+        # Contar outliers
+        n_outliers = (outlier_labels == -1).sum()
+        print(f"\n⚠️  Outliers detectados: {n_outliers:,} ({n_outliers/len(recaudo_valido)*100:.2f}%)")
+        
+        # Valores extremos
+        outliers = recaudo_valido[outlier_labels == -1]
+        print(f"\nTop 10 outliers más extremos:")
+        print(outliers.nlargest(10).apply(lambda x: f"${x:,.2f}"))
+
+=== Celda 23 [markdown] ===
+## 10. Análisis Temporal Preliminar
+
+Explorar cómo se distribuye el recaudo a lo largo del tiempo
+
+=== Celda 24 [code] ===
+# Este código necesita ajustarse según la estructura real de los datos
+# Por ahora, dejamos placeholder para completar una vez se explore el dataset
+
+print("⏳ Este análisis se completará una vez se identifique la estructura temporal de los datos")
+print("\nPróximos pasos:")
+print("1. Identificar columnas de fecha/periodo")
+print("2. Agregar recaudo por periodo (mensual/trimestral/semestral)")
+print("3. Analizar estacionalidad y tendencias")
+print("4. Identificar gaps temporales")
+
+=== Celda 25 [markdown] ===
+## 11. Resumen Ejecutivo de Diagnóstico
+
+### Hallazgos Críticos Identificados
+
+=== Celda 26 [code] ===
+print("=" * 80)
+print("RESUMEN EJECUTIVO - DIAGNÓSTICO DE DATOS")
+print("=" * 80)
+
+print("\n📊 DIMENSIONES:")
+print(f"  Registros totales: {len(df_raw):,}")
+print(f"  Columnas: {df_raw.shape[1]}")
+
+if columna_recaudo and columna_recaudo in df_raw.columns:
+    recaudo_valido = df_raw[columna_recaudo].replace([np.inf, -np.inf], np.nan).dropna()
+    
+    print("\n⚠️  PROBLEMAS DETECTADOS:")
+    
+    # Valores negativos
+    negativos = (recaudo_valido < 0).sum()
+    if negativos > 0:
+        print(f"  ❌ Valores negativos: {negativos:,} registros")
+    
+    # Valores extremos
+    extremos = (recaudo_valido > 8e8).sum()
+    if extremos > 0:
+        print(f"  🚨 Outliers extremos (>$800M): {extremos:,} registros")
+    
+    # Valores cercanos a cero
+    cerca_cero = ((recaudo_valido >= 0) & (recaudo_valido < 1000)).sum()
+    if cerca_cero > 10000:
+        print(f"  📉 Transacciones en escala cero (<$1,000): {cerca_cero:,} registros")
+    
+    print("\n✅ ACCIONES REQUERIDAS:")
+    print("  1. Auditar y corregir valores negativos")
+    print("  2. Aplicar Winsorization/Capping a outliers extremos")
+    print("  3. Filtrar o normalizar transacciones de bajo valor")
+    print("  4. Validar integridad temporal")
+    print("  5. Preparar agregaciones por horizonte temporal")
+
+print("\n" + "=" * 80)
+
+=== Celda 27 [markdown] ===
+## 12. Exportar Datos para Siguiente Fase
+
+Guardar datos crudos para continuar con Feature Engineering
+
+=== Celda 28 [code] ===
+# Guardar copia de datos originales
+output_path = '../data/raw/datos_originales.parquet'
+df_raw.to_parquet(output_path, index=False)
+print(f"✅ Datos originales guardados en: {output_path}")
+
+print("\n📋 SIGUIENTE PASO:")
+print("   Abrir cuaderno: 02_Feature_Engineering.ipynb")
+

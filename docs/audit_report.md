@@ -28,7 +28,7 @@ El código actual en `01_limpieza_inicial.py` proporciona una base funcional par
 ## Recomendaciones Técnicas
 
 ### 4. Calidad de Código y Estructura
-- **Rutas "Hardcoded"**: La ruta `BaseRentasCedidas (1).xlsx` está fija.
+- **Rutas "Hardcoded"**: La ruta `BaseRentasVF_limpieza21feb.xlsx` está fija.
   - *Sugerencia*: Usar un archivo de configuración o argumentos de línea de comando.
 - **Manejo de Errores**: El bloque `try-except` captura todas las excepciones de forma genérica.
 - **Validación de Columnas**: El script verifica columnas pero no valida tipos de datos esperados más allá de la conversión forzada (`errors='coerce'`), lo que podría silenciar errores de formato masivos.
